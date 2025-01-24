@@ -17,7 +17,7 @@ import pytz
 
 # CONFIGURATION
 url = "https://relyhome.com/login/"
-apikey = 'f35d87786f931aa47cb231d5b5506272'  # 2Captcha API key
+apikey = 'd256a1ca7a8d707de6f83e40a374a3c1'  # 2Captcha API key
 solver = TwoCaptcha(apikey, pollingInterval=1)
 
 # LOCATORS
