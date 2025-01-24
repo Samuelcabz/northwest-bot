@@ -34,7 +34,6 @@ jobs_available_xpath = "//*[@id='sidebar']/div[2]/div[1]/div[2]/div/div/div/div/
 
 # Define the log file
 log_file = "job_submissions.txt"
-restart_logfile = "restart_log.txt"
 log_file_path = "available_jobs_log.txt"
 if not os.path.exists(log_file_path):
     open(log_file_path, 'w').close()
