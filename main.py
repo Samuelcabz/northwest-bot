@@ -41,7 +41,7 @@ if not os.path.exists(log_file_path):
 
 # Counter for the submissions
 submission_count = 0
-
+ 
 email_sent = False
 last_available_jobs_count = 0 
 
