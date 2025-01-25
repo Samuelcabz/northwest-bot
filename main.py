@@ -265,7 +265,7 @@ def login_and_click_button():
                                     system_text = system_td.text.strip()
                             
                                     # Skip rows where the system contains "Septic"
-                                    if "septic" in system_text.lower():
+                                    if "septic" in system_text.lower() or "service line" in system_text.lower():
                                         print(f"Skipping job with system: {system_text}")
                                         continue
 
