@@ -1,4 +1,3 @@
-import undetected_chromedriver as uc
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -70,7 +69,7 @@ def login_and_click_button():
     global submission_count
     global last_available_jobs_count    # Access the global submission count
 
-    options = uc.ChromeOptions()
+    options = Options()
     options.add_argument("--headless")  # Enables headless mode
     options.add_argument("--disable-gpu")  # Disable GPU acceleration (optional)
     options.add_argument("--no-sandbox")  # Disable sandboxing (optional)
@@ -78,7 +77,7 @@ def login_and_click_button():
     options.add_argument("--window-size=1920,1080")  # Explicitly set the window size
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
 
-    with uc.Chrome(options=options) as browser:
+    with webdriver.Chrome(options=options) as browser:
         browser.maximize_window()
         start_time = time.time()  
         while True:
