@@ -31,12 +31,9 @@ c_popup_captcha = "//iframe[contains(@title, 'two minutes')]"
 c_verify_button = "//button[@id='recaptcha-verify-button']"
 signin_button = "//button[@type='submit']"
 jobs_available_xpath = "//*[@id='sidebar']/div[2]/div[1]/div[2]/div/div/div/div/ul/li[13]/a"
-
+ 
 # Define the log file
-log_file = "job_submissions.txt"
-log_file_path = "available_jobs_log.txt"
-if not os.path.exists(log_file_path):
-    open(log_file_path, 'w').close()
+
 
 # Counter for the submissions
 submission_count = 0
@@ -45,13 +42,12 @@ email_sent = False
 last_available_jobs_count = 0 
 
 est_timezone = pytz.timezone("US/Eastern")
-current_time_est = datetime.now(est_timezone).strftime('%Y-%m-%d %H:%M:%S')
 
 
 def send_email_notification(subject, body):
     from_email = "botautomation707@gmail.com"  # Replace with your email
     from_name = "Bot"  # Desired sender name
-    to_email = ["samuelcabagay707@gmail.com", "jmarcelino@fidelisrepairs.com"]   # Replace with your email or desired recipient
+    to_email = ["samuelcabagay707@gmail.com","jmarcelino@fidelisrepairs.com"]   # Replace with your email or desired recipient
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = f"{from_name} <{from_email}>" 
@@ -64,16 +60,28 @@ def send_email_notification(subject, body):
         print("Email sent")
 
 
+def send_email_notification_to_me(subject, body):
+    from_email = "botautomation707@gmail.com"  # Replace with your email
+    from_name = "Bot"  # Desired sender name
+    to_email = ["samuelcabagay707@gmail.com"]   # Replace with your email or desired recipient
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = f"{from_name} <{from_email}>" 
+    msg["To"] = ", ".join(to_email)
+
+    # Using Gmail's SMTP server with SSL
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login("botautomation707@gmail.com", "lnrwjzugoanukyhd")  # Use app password here
+        server.sendmail(from_email, to_email, msg.as_string())
+        print("Email sent")
+
 # MAIN TASK: Login and click button based on location filter
 def login_and_click_button():
     global submission_count
     global last_available_jobs_count    # Access the global submission count
 
     options = Options()
-    options.add_argument("--headless")  # Enables headless mode
-    options.add_argument("--disable-gpu")  # Disable GPU acceleration (optional)
-    options.add_argument("--no-sandbox")  # Disable sandboxing (optional)
-    options.add_argument("--disable-dev-shm-usage")
+
     options.add_argument("--window-size=1920,1080")  # Explicitly set the window size
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
 
@@ -208,29 +216,27 @@ def login_and_click_button():
                             else:
                                 available_jobs_count = len(rows)
                                 print(f"Available jobs count: {available_jobs_count}")
+                                current_time_est = datetime.now(est_timezone).strftime('%Y-%m-%d %H:%M:%S')
+                                table = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//table")))
+                                headers = table.find_elements(By.XPATH, ".//thead/tr/th")
+                                header_map = {header.text.strip().lower(): index + 1 for index, header in enumerate(headers)}
+                                for row in rows:
+                                    try:
+                                        system = row.find_element(By.XPATH, f".//td[{header_map['system']}]").text
+                                        brand = row.find_element(By.XPATH, f".//td[{header_map['brand']}]").text
+                                        location = row.find_element(By.XPATH, f".//td[{header_map['location']}]").text
+                                        distance = row.find_element(By.XPATH, f".//td[{header_map['distance']}]").text
+                                        company = row.find_element(By.XPATH, f".//td[{header_map['company']}]").text
                                 
-                                with open(log_file_path, 'a') as file:
-                                    file.write(f"\nAvailable jobs count: {available_jobs_count} - {current_time_est}\n")
-                                    file.write("Details of available jobs:\n")
-                                    table = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//table")))
-                                    headers = table.find_elements(By.XPATH, ".//thead/tr/th")
-                                    header_map = {header.text.strip().lower(): index + 1 for index, header in enumerate(headers)}
-                                    for row in rows:
-                                        try:
-                                            system = row.find_element(By.XPATH, f".//td[{header_map['system']}]").text
-                                            brand = row.find_element(By.XPATH, f".//td[{header_map['brand']}]").text
-                                            location = row.find_element(By.XPATH, f".//td[{header_map['location']}]").text
-                                            distance = row.find_element(By.XPATH, f".//td[{header_map['distance']}]").text
-                                            company = row.find_element(By.XPATH, f".//td[{header_map['company']}]").text
-                                    
-                                            file.write(
-                                                f"System: {system}, Brand: {brand}, Location: {location}, Distance: {distance}, Company: {company}\n"
-                                            )
-                                    
-                                        except Exception as e:
-                                            print(f"Error processing row: {e}")
-                                            continue
+                                        send_email_notification_to_me(
+                                            "Available Jobs", 
+                                             f"System: {system}, Brand: {brand}, Location: {location}, Distance: {distance}, Company: {company}\n\n"
+                                             f"TimeStamp: {current_time_est}"
 
+                                        )
+                                    except Exception as e:
+                                        print(f"Error processing row: {e}")
+                                        continue
                                 if available_jobs_count != last_available_jobs_count:
                                     if browser.current_url == "https://relyhome.com/tasks/":
                                         send_email_notification(
@@ -294,6 +300,8 @@ def login_and_click_button():
                                     suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
                                 return f"{day}{suffix}"
 
+                            
+                            
                             today = datetime.now(est_timezone)
                             desired_day = today + timedelta(days=2)  # This will select the day 2 days from today (e.g., Monday -> Wednesday)
                             
@@ -384,12 +392,11 @@ def login_and_click_button():
                                             print(f"Total submissions: {submission_count}")
                                             
                                             # Log the submission
-                                            with open(log_file, 'a') as file:
-                                                file.write(f"Job submitted for {day_text} at {current_time_est} - Submission #{submission_count}\n")
-                                            
+                                            current_time_est = datetime.now(est_timezone).strftime('%Y-%m-%d %H:%M:%S')
+
                                             send_email_notification(
                                                 "Job Accepted Notification",
-                                                f"Job has been successfully accepted - {current_time_est}.\n\n"
+                                                f"Job has been successfully accepted - {current_time_est}\n\n"
                                                 f"SYSTEM: {system_text}\n"
                                                 f"LOCATION: {location_text}\n"
                                                 f"Day: {day_text}\n"
