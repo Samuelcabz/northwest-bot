@@ -402,8 +402,9 @@ def login_and_click_button():
                                                 f"Job has been successfully accepted - {current_time_est}\n\n"
                                                 f"SYSTEM: {system_text}\n"
                                                 f"LOCATION: {location_text}\n"
-                                                f"Day: {day_text}\n"
-                                                f"Time: {slot_text}\n\n"
+                                                f"DAY: {day_text}\n"
+                                                f"TIME: {slot_text}\n"
+                                                f"URL: {browser.current_url}\n\n"
                                                 "Visit the website for more information or to reschedule the day.\n"
                                                 "[Email account: FL-NorthWest@FidelisRepairs.com]"
                                             )
