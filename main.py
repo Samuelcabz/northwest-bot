@@ -231,6 +231,7 @@ def login_and_click_button():
                                 print(f"Available jobs count: {available_jobs_count}")
                                 current_time_est = datetime.now(est_timezone).strftime('%Y-%m-%d %H:%M:%S')
                                 table = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//table")))
+                                browser.execute_script("arguments[0].scrollIntoView({block: 'center'});", table)
                                 headers = table.find_elements(By.XPATH, ".//thead/tr/th")
                                 header_map = {header.text.strip().lower(): index + 1 for index, header in enumerate(headers)}
                                 for row in rows:
@@ -270,17 +271,22 @@ def login_and_click_button():
                             for row in rows:
                                 try:
                                     table = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, "//table")))
+                                    browser.execute_script("arguments[0].scrollIntoView();", table)
                                     headers = table.find_elements(By.XPATH, ".//thead/tr/th")
                                     header_map = {header.text.strip().lower(): index + 1 for index, header in enumerate(headers)}
 
+                                    browser.execute_script("arguments[0].scrollIntoView();", row)
                                     swo_td = row.find_element(By.XPATH, f".//td[{header_map.get('swo #', 1)}]")
+                                    browser.execute_script("arguments[0].scrollIntoView();", swo_td)
                                     swo_number = swo_td.text.strip()
                                     # Get the 3rd <td> element (location)
                                     location_td = row.find_element(By.XPATH, f".//td[{header_map['location']}]")
+                                    browser.execute_script("arguments[0].scrollIntoView();", location_td)
                                     location_text = location_td.text.strip()
 
                                     # Get the 2nd <td> element (system)
                                     system_td = row.find_element(By.XPATH, f".//td[{header_map['system']}]")
+                                    browser.execute_script("arguments[0].scrollIntoView();", system_td)
                                     system_text = system_td.text.strip()
                             
                                     # Skip rows where the system contains "Septic"
@@ -294,6 +300,7 @@ def login_and_click_button():
                                         
                                         # Click the button in the same row
                                         button = row.find_element(By.XPATH, f".//td[{header_map['actions']}]//a[contains(@class, 'btn-primary')]")
+                                        browser.execute_script("arguments[0].scrollIntoView();", button)
                                         button.click()
                                         print("Button clicked for:", location_text)
                                         button_clicked = True
