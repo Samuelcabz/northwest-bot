@@ -204,7 +204,17 @@ def login_and_click_button():
                             EC.element_to_be_clickable((By.XPATH, "//button[@class='close-btn']"))
                         )
                         close_button.click()
+
+
+
                         print("Close button clicked.")
+
+                        acknowledge_button = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//*[@id='appAnnouncementBanner']/div/div/div/div/div/button"))
+                        )
+                        acknowledge_button.click()
+                        print("acknowledge button clicked.")
+
                     except Exception as e:
                         print(f"Error while clicking close button: {e}")
                     while True:
