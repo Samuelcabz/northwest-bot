@@ -248,7 +248,7 @@ def login_and_click_button():
                                             "The Bot is currently on the Tasks page. Please visit the website to complete the tasks before the bot can proceed to the Jobs Available page. \n\n"
                                             "[Email account: FL-NorthWest@FidelisRepairs.com] You can log in here: https://relyhome.com/login/\n\n"
                                             "After completing the tasks, please contact the developer to run the bot again."
-
+ 
                                         )                                   
                                         last_available_jobs_count = available_jobs_count
                                         email_sent = True
