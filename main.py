@@ -76,7 +76,7 @@ def send_email_notification_to_me(subject, body):
         server.sendmail(from_email, to_email, msg.as_string())
         print("Email sent")
 
-def send_job_to_api(system, location, day, time_slot,url):
+def send_job_to_api(system, location, day, time_slot,url,swo):
     try:
         response = requests.post("https://bot101.pythonanywhere.com/api/jobs/store", json={
             "system": system,
@@ -84,7 +84,7 @@ def send_job_to_api(system, location, day, time_slot,url):
             "day": day,
             "time_slot": time_slot,
             "url": url,
-            "swo": ""
+            "swo": swo
         })
         if response.status_code == 200:
             print("Job data sent to web dashboard.")
@@ -431,6 +431,19 @@ def login_and_click_button():
                                             time.sleep(1)  # Wait for the scroll to complete
                                             print("Submitting selection...")
                                             submit_button.click()
+
+                                            try:
+                                                swo_element = WebDriverWait(browser, 10).until(
+                                                    EC.presence_of_element_located((By.XPATH, '//*[@id="offerPage"]/div/h3'))
+                                                )
+                                                swo_text = swo_element.text.strip()
+                                                match = re.search(r'SWO#:\s*(\d+)', swo_text)
+                                                swo_number = match.group(1) if match else ""
+                                                print(f"Extracted SWO#: {swo_number}")
+                                            except Exception as e:
+                                                print(f"Could not extract SWO number: {e}")
+                                                swo_number = ""
+
                                             # Increment the submission count
                                             submission_count += 1
                                             print(f"Total submissions: {submission_count}")
@@ -449,7 +462,7 @@ def login_and_click_button():
                                                 "Visit the website for more information or to reschedule the day.\n"
                                                 "[Email account: FL-NorthWest@FidelisRepairs.com]"
                                             )
-                                            send_job_to_api(system_text, location_text, day_text, slot_text, browser.current_url)
+                                            send_job_to_api(system_text, location_text, day_text, slot_text, browser.current_url, swo_number)
 
 
                                             # Return to jobs/available page
