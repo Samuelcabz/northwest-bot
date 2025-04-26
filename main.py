@@ -18,7 +18,7 @@ import requests
 
 # CONFIGURATION
 url = "https://relyhome.com/login/"
-apikey = 'fb6fe58770b64c8de8fc2c6abdf449db'  # 2Captcha API key
+apikey = 'fb6fe58770b64c8de8fc2c6abdf449db'  # 2Captcha API key 
 solver = TwoCaptcha(apikey, pollingInterval=1)
 
 # LOCATORS
