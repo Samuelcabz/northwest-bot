@@ -18,7 +18,7 @@ import requests
 
 # CONFIGURATION
 url = "https://relyhome.com/login/"
-apikey = 'd256a1ca7a8d707de6f83e40a374a3c1'  # 2Captcha API key
+apikey = 'fb6fe58770b64c8de8fc2c6abdf449db'  # 2Captcha API key
 solver = TwoCaptcha(apikey, pollingInterval=1)
 
 # LOCATORS
@@ -134,10 +134,6 @@ def login_and_click_button():
     global last_available_jobs_count    # Access the global submission count
 
     options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=2560,1440")
     options.add_argument("--start-maximized")
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
