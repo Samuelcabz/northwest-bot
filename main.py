@@ -140,7 +140,7 @@ def login_and_click_button():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")  # Explicitly set the window size
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-
+ 
     with webdriver.Chrome(options=options) as browser:
         browser.maximize_window()
         start_time = time.time()  
