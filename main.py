@@ -134,11 +134,12 @@ def login_and_click_button():
     global last_available_jobs_count    # Access the global submission count
 
     options = Options()
-    options.add_argument("--headless")  # Enables headless mode
-    options.add_argument("--disable-gpu")  # Disable GPU acceleration (optional)
-    options.add_argument("--no-sandbox")  # Disable sandboxing (optional)
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")  # Explicitly set the window size
+    options.add_argument("--window-size=2560,1440")
+    options.add_argument("--start-maximized")
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
  
     with webdriver.Chrome(options=options) as browser:
