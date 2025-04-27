@@ -86,6 +86,37 @@ def send_job_to_api(system, location, day, time_slot,url,swo):
         print(f"Error sending job to API: {e}")
 
 
+def get_twocaptcha_balance():
+    try:
+        solver = TwoCaptcha(apikey)
+        result = solver.balance()
+        print(f"2Captcha Balance: {result}")
+        return result
+    except Exception as e:
+        print(f"Error fetching 2Captcha balance: {e}")
+        return None
+
+
+def send_balance_to_api():
+    balance = get_twocaptcha_balance()
+    if balance is None:
+        print("No balance to send due to previous error.")
+        return
+
+    payload = {
+        "balance": balance
+    }
+    
+    try:
+        response = requests.post("https://bot101.pythonanywhere.com/api/balance", json=payload)
+        if response.status_code == 200:
+            print("Balance data sent to web dashboard successfully.")
+        else:
+            print(f"Failed to send balance. Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        print(f"Error sending balance to API: {e}")
+
+
 
 
 
@@ -131,6 +162,8 @@ def login_and_click_button():
 
                 browser.get(url)
                 print("Started")
+                send_balance_to_api()
+                
 
                 # Instantiate helper classes
                 page_actions = PageActions(browser)
