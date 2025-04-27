@@ -22,14 +22,6 @@ apikey = 'ccf7183648c4316217ed45e5a11c78a5'  # 2Captcha API key
 solver = TwoCaptcha(apikey, pollingInterval=1)
 
 # LOCATORS
-c_try_again = "//div[@class='rc-imageselect-incorrect-response']"
-c_select_more = "//div[@class='rc-imageselect-error-select-more']"
-c_dynamic_more = "//div[@class='rc-imageselect-error-dynamic-more']"
-c_select_something = "//div[@class='rc-imageselect-error-select-something']"
-c_iframe_captcha = "//iframe[@title='reCAPTCHA']"
-c_checkbox_captcha = "//span[@role='checkbox']"
-c_popup_captcha = "//iframe[contains(@title, 'two minutes')]"
-c_verify_button = "//button[@id='recaptcha-verify-button']"
 signin_button = "//button[@type='submit']"
 jobs_available_xpath = "//*[@id='sidebar']/div[2]/div[1]/div[2]/div/div/div/div/ul/li[13]/a"
  
