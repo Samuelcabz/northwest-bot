@@ -104,11 +104,25 @@ def login_and_click_button():
     global last_available_jobs_count    # Access the global submission count
 
     options = Options()
-    options.add_argument("--headless")  # Enables headless mode
-    options.add_argument("--disable-gpu")  # Disable GPU acceleration (optional)
-    options.add_argument("--no-sandbox")  # Disable sandboxing (optional)
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")  # Explicitly set the window size
+    options.add_argument("--headless")                    
+    options.add_argument("--disable-gpu")                 
+    options.add_argument("--no-sandbox")                  
+    options.add_argument("--disable-dev-shm-usage")       
+    options.add_argument("--window-size=1920,1080")       
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--log-level=3")
+    options.page_load_strategy = 'eager'  # return once DOM is ready
+
+    # block images, CSS, fonts, media, notifications
+    prefs = {
+        'profile.managed_default_content_settings.images': 2,
+        'profile.managed_default_content_settings.stylesheets': 2,
+        'profile.managed_default_content_settings.fonts': 2,
+        'profile.managed_default_content_settings.media_stream': 2,
+        'profile.managed_default_content_settings.notifications': 2,
+    }
+    options.add_experimental_option('prefs', prefs)
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
  
     with webdriver.Chrome(options=options) as browser:
