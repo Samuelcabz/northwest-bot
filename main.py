@@ -149,7 +149,7 @@ def login_and_click_button():
                 page_actions.click_checkbox(c_checkbox_captcha)
                 page_actions.switch_to_default_content()
                 page_actions.switch_to_iframe(c_popup_captcha)
-                time.sleep(1)
+                WebDriverWait(browser, 2).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, c_popup_captcha)))
 
                 script_get_data_captcha = captcha_helper.load_js_script('js_scripts/get_captcha_data.js')
                 script_change_tracking = captcha_helper.load_js_script('js_scripts/track_image_updates.js')
