@@ -393,14 +393,17 @@ def login_and_click_button():
                                             time.sleep(1)  # Wait for the scroll to complete
                                             print("Submitting selection...")
                                             submit_button.click()
+                                            WebDriverWait(browser, 10).until(
+                                                EC.url_contains("offer.php")
+                                            )
+                                            browser.refresh()
 
                                             try:
-                                                swo_element = WebDriverWait(browser, 10).until(
-                                                    EC.presence_of_element_located((By.XPATH, '//*[@id="offerPage"]/div/h3'))
-                                                )
-                                                swo_text = swo_element.text.strip()
-                                                match = re.search(r'SWO#:\s*(\d+)', swo_text)
-                                                swo_number = match.group(1) if match else ""
+                                                WebDriverWait(browser, 10).until(
+                                                EC.visibility_of_element_located((By.CSS_SELECTOR, "h3.offer_title")))
+                                                swo_element = browser.find_element(By.CSS_SELECTOR, "h3.offer_title")
+                                                swo_text = swo_element.text
+                                                swo_number = swo_text.split("SWO#:")[-1].strip()
                                                 print(f"Extracted SWO#: {swo_number}")
                                             except Exception as e:
                                                 print(f"Could not extract SWO number: {e}")
