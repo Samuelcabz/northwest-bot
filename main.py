@@ -246,7 +246,10 @@ def login_and_click_button():
                                         last_available_jobs_count = available_jobs_count
                                         email_sent = True
                                         time.sleep(1800)
-                                        return
+                                        my_account_button = browser.find_element(By.ID, "page-header-user-dropdown")
+                                        my_account_button.click()
+                                        logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
+                                        logout_button.click()
 
                             button_clicked = False
 
@@ -442,7 +445,6 @@ def login_and_click_button():
                                     EC.element_to_be_clickable((By.XPATH, jobs_available_xpath)))
                                 jobs_available_link.click()
                                 time.sleep(3)
-                                return
 
                         except Exception as e:
                             print(f"No jobs available or error: {e}. Retrying...", browser.current_url) 
@@ -452,7 +454,6 @@ def login_and_click_button():
                             )
                             jobs_available_link.click()
                             time.sleep(3)
-                            return
 
                 else:
                     print("Login failed. Current URL:", browser.current_url)
@@ -470,7 +471,10 @@ def login_and_click_button():
                     if browser.current_url == "https://relyhome.com/tasks/":
                         # If the email has already been sent, log out again
                         time.sleep(1800)
-                        return
+                        my_account_button = browser.find_element(By.ID, "page-header-user-dropdown")
+                        my_account_button.click()
+                        logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
+                        logout_button.click()
 
                         
 
@@ -485,10 +489,8 @@ def login_and_click_button():
                     my_account_button.click()
                     logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
                     logout_button.click()
-                    
                 time.sleep(10)
                 continue
 
 if __name__ == "__main__":
-    while True:
-        login_and_click_button()
+    login_and_click_button()
