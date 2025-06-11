@@ -123,6 +123,7 @@ def send_balance_to_api():
 
 
 
+
 # MAIN TASK: Login and click button based on location filter
 def login_and_click_button():
     global submission_count
