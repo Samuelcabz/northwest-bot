@@ -50,7 +50,7 @@ def send_email_notification(subject, body):
 
     # Using Gmail's SMTP server with SSL
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login("botautomation707@gmail.com", "lnrwjzugoanukyhd")  # Use app password here
+        server.login("botautomation707@gmail.com", "fieejnakiaagrnvf")  # Use app password here
         server.sendmail(from_email, to_email, msg.as_string())
         print("Email sent")
 
@@ -66,7 +66,7 @@ def send_email_notification_to_me(subject, body):
 
     # Using Gmail's SMTP server with SSL
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login("botautomation707@gmail.com", "lnrwjzugoanukyhd")  # Use app password here
+        server.login("botautomation707@gmail.com", "fieejnakiaagrnvf")  # Use app password here
         server.sendmail(from_email, to_email, msg.as_string())
         print("Email sent")
 
