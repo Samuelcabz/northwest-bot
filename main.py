@@ -327,30 +327,27 @@ def login_and_click_button():
                             
                             
                             today = datetime.now(est_timezone)
-                            desired_day = today + timedelta(days=2)  # This will select the day 2 days from today (e.g., Monday -> Wednesday)
+                            weekday = today.weekday()   # This will select the day 2 days from today (e.g., Monday -> Wednesday)
                             
                             
-                            if today.weekday() == 4:  # Friday
-                                desired_day = today + timedelta(days=3)  # Skip to Monday
+                            if weekday < 5:
+                                # Monday–Friday: use today
+                                desired_day = today
+                            else:
+                                # Saturday (5) or Sunday (6): jump to next Monday
+                                days_until_monday = (7 - weekday)
+                                desired_day = today + timedelta(days=days_until_monday)
                             
-                            elif today.weekday() == 3:  # Thursday
-                                desired_day = today + timedelta(days=4)  # Skip to Monday
-
-                                # Check if today is a weekend (Saturday or Sunday)
-                            elif today.weekday() == 5:  # Saturday
-                                # Set desired day to Monday if today is Saturday
-                                desired_day = today + timedelta(days=2)
-                            elif today.weekday() == 6:  # Sunday
-                                # Set desired day to Tuesday if today is Sunday
-                                desired_day = today + timedelta(days=2)
+                            # format for matching
+                            def add_day_suffix(day):
+                                if 10 <= day <= 20:
+                                    return 'th'
+                                return {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
                             
-                            desired_day_name = desired_day.strftime('%A')  # Get the weekday name (e.g., "Monday")
-                            desired_day_date = desired_day.strftime('%d %B, %Y')
-
-                            day_number = int(desired_day.strftime('%d'))
-                            
-                            desired_day_with_weekday = f"{desired_day_name} {desired_day.strftime('%B')} {add_day_suffix(day_number)}, {desired_day.strftime('%Y')}"
-                            desired_day_date_normalized = f"{add_day_suffix(day_number)} {desired_day.strftime('%B, %Y')}"
+                            day_number = desired_day.day
+                            desired_day_name       = desired_day.strftime('%A')
+                            desired_day_with_weekday = f"{desired_day_name} {desired_day.strftime('%B')} {day_number}{add_day_suffix(day_number)}, {desired_day.year}"
+                            desired_day_date_normalized = f"{day_number}{add_day_suffix(day_number)} {desired_day.strftime('%B, %Y')}"
                             
                             if button_clicked:
                                 try:
