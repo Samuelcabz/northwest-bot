@@ -68,7 +68,7 @@ def send_email_notification_to_me(subject, body):
         server.sendmail(from_email, to_email, msg.as_string())
         print("Email sent")
 
-def send_job_to_api(system, location, day, time_slot,url,swo):
+def send_job_to_api(system, location, day, time_slot,url,swo: str = "",account: str = "FL-NorthWest@FidelisRepairs.com"):
     try:
         response = requests.post("https://bot101.pythonanywhere.com/api/jobs/store", json={
             "system": system,
@@ -76,7 +76,8 @@ def send_job_to_api(system, location, day, time_slot,url,swo):
             "day": day,
             "time_slot": time_slot,
             "url": url,
-            "swo": swo
+            "swo": swo,
+            "account": account
         })
         if response.status_code == 200:
             print("Job data sent to web dashboard.")
