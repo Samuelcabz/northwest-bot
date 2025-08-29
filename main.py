@@ -16,17 +16,15 @@ import sys
 import pytz
 import requests
 
-
 # CONFIGURATION
 url = "https://relyhome.com/login/"
 apikey = 'ccf7183648c4316217ed45e5a11c78a5'  # 2Captcha API key
 solver = TwoCaptcha(apikey, pollingInterval=1)
-ACCOUNT_EMAIL = "FL-NorthWest@FidelisRepairs.com"
 
 # LOCATORS
 signin_button = "//button[@type='submit']"
 jobs_available_xpath = "//*[@id='sidebar']/div[2]/div[1]/div[2]/div/div/div/div/ul/li[13]/a"
- 
+
 # Define the log file
 
 
@@ -73,7 +71,6 @@ def send_email_notification_to_me(subject, body):
 def send_job_to_api(system, location, day, time_slot,url,swo):
     try:
         response = requests.post("https://bot101.pythonanywhere.com/api/jobs/store", json={
-            "account": ACCOUNT_EMAIL,
             "system": system,
             "location": location,
             "day": day,
@@ -87,6 +84,7 @@ def send_job_to_api(system, location, day, time_slot,url,swo):
             print(f"Failed to send job. Status: {response.status_code}, Response: {response.text}")
     except Exception as e:
         print(f"Error sending job to API: {e}")
+
 
 def get_twocaptcha_balance():
     try:
@@ -117,7 +115,6 @@ def send_balance_to_api():
             print(f"Failed to send balance. Status: {response.status_code}, Response: {response.text}")
     except Exception as e:
         print(f"Error sending balance to API: {e}")
-
 
 
 
@@ -154,7 +151,6 @@ def login_and_click_button():
                 page_actions = PageActions(browser)
                 page_actions.enter_credentials("FL-NorthWest@FidelisRepairs.com", "Fidelis1!")
 
-
                 recaptcha_div = browser.find_element(
                     By.CSS_SELECTOR, "div.g-recaptcha"
                 )
@@ -172,14 +168,7 @@ def login_and_click_button():
                   document.querySelector('textarea#g-recaptcha-response').style.display = '';
                   document.querySelector('textarea#g-recaptcha-response').value = arguments[0];
                 """, token)
-                WebDriverWait(browser, 5).until_not(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, ".grecaptcha-badge"))
-                )
-                login_btn = WebDriverWait(browser, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, signin_button))
-                )
-                browser.execute_script("arguments[0].scrollIntoView(true);", login_btn)
-                browser.execute_script("arguments[0].click();", login_btn)
+                page_actions.click_check_button(signin_button)
 
                 # Check if login was successful by verifying URL or page content
                 current_url = browser.current_url
@@ -187,20 +176,18 @@ def login_and_click_button():
                     print("Login successful. Redirected to available jobs page.")
                     try:
                         close_button = WebDriverWait(browser, 10).until(
-                            EC.presence_of_element_located((By.XPATH, "//button[@class='close-btn']"))
+                            EC.element_to_be_clickable((By.XPATH, "//button[@class='close-btn']"))
                         )
-                        browser.execute_script("arguments[0].scrollIntoView(true);", close_button)
-                        browser.execute_script("arguments[0].click();", close_button)
+                        close_button.click()
 
 
 
                         print("Close button clicked.")
 
                         acknowledge_button = WebDriverWait(browser, 10).until(
-                            EC.presence_of_element_located((By.XPATH, "//*[@id='appAnnouncementBanner']//button"))
+                        EC.element_to_be_clickable((By.XPATH, "//*[@id='appAnnouncementBanner']/div/div/div/div/div/button"))
                         )
-                        browser.execute_script("arguments[0].scrollIntoView(true);", acknowledge_button)
-                        browser.execute_script("arguments[0].click();", acknowledge_button)
+                        acknowledge_button.click()
                         print("acknowledge button clicked.")
 
                     except Exception as e:
@@ -232,14 +219,15 @@ def login_and_click_button():
                                         distance = row.find_element(By.XPATH, f".//td[{header_map['distance']}]").text
                                         company = row.find_element(By.XPATH, f".//td[{header_map['company']}]").text
                                 
+                                        # Send email only if the location has changed
+
                                         if location != last_sent_location:
                                             send_email_notification_to_me(
-                                                "Available Jobs", 
+                                                "Available Jobs",
                                                 f"System: {system}, Brand: {brand}, Location: {location}, Distance: {distance}, Company: {company}\n\n"
                                                 f"TimeStamp: {current_time_est}"
-
                                             )
-                                            last_sent_location = location
+                                            last_sent_location = location  # Update last sent location
                                     except Exception as e:
                                         print(f"Error processing row: {e}")
                                         continue
@@ -257,11 +245,9 @@ def login_and_click_button():
                                         email_sent = True
                                         time.sleep(1800)
                                         my_account_button = browser.find_element(By.ID, "page-header-user-dropdown")
-                                        browser.execute_script("arguments[0].scrollIntoView(true);", my_account_button)
-                                        browser.execute_script("arguments[0].click();", my_account_button)
+                                        my_account_button.click()
                                         logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
-                                        browser.execute_script("arguments[0].scrollIntoView(true);", logout_button)
-                                        browser.execute_script("arguments[0].click();", logout_button)
+                                        logout_button.click()
 
                             button_clicked = False
 
@@ -274,19 +260,13 @@ def login_and_click_button():
                                     header_map = {header.text.strip().lower(): index + 1 for index, header in enumerate(headers)}
 
                                     browser.execute_script("arguments[0].scrollIntoView();", row)
-                                    swo_td = row.find_element(By.XPATH, f".//td[{header_map.get('swo #', 1)}]")
-                                    browser.execute_script("arguments[0].scrollIntoView();", swo_td)
-                                    swo_number = swo_td.text.strip()
+                                    # swo_td = row.find_element(By.XPATH, f".//td[{header_map.get('swo #', 1)}]")
+                                    # browser.execute_script("arguments[0].scrollIntoView();", swo_td)
+                                    # swo_number = swo_td.text.strip()
                                     # Get the 3rd <td> element (location)
                                     location_td = row.find_element(By.XPATH, f".//td[{header_map['location']}]")
                                     browser.execute_script("arguments[0].scrollIntoView();", location_td)
                                     location_text = location_td.text.strip()
-                                    loc_lower     = location_text.lower()
-
-                                    excluded = ["live oak", "lake city", "cedar key", "alachua"]
-                                    if any(city in loc_lower for city in excluded):
-                                        print(f"Skipping excluded location: {location_text}")
-                                        continue
 
                                     # Get the 2nd <td> element (system)
                                     system_td = row.find_element(By.XPATH, f".//td[{header_map['system']}]")
@@ -300,12 +280,12 @@ def login_and_click_button():
 
                                     # Check if location contains "Florida", "FL", "fl"
                                     if any(loc in location_text.lower() for loc in ["florida", "fl"]):
-                                        print(f"Matching location found: {location_text} (SWO# {swo_number})")
+                                        print(f"Matching location found: {location_text} ")
                                         
                                         # Click the button in the same row
                                         button = row.find_element(By.XPATH, f".//td[{header_map['actions']}]//a[contains(@class, 'btn-primary')]")
-                                        browser.execute_script("arguments[0].scrollIntoView(true);", button)
-                                        browser.execute_script("arguments[0].click();", button)
+                                        browser.execute_script("arguments[0].scrollIntoView();", button)
+                                        button.click()
                                         print("Button clicked for:", location_text)
                                         button_clicked = True
                                         break  # Stop after first match
@@ -327,27 +307,30 @@ def login_and_click_button():
                             
                             
                             today = datetime.now(est_timezone)
-                            weekday = today.weekday()   # This will select the day 2 days from today (e.g., Monday -> Wednesday)
+                            desired_day = today + timedelta(days=2)  # This will select the day 2 days from today (e.g., Monday -> Wednesday)
                             
                             
-                            if weekday < 5:
-                                # Monday–Friday: use today
-                                desired_day = today
-                            else:
-                                # Saturday (5) or Sunday (6): jump to next Monday
-                                days_until_monday = (7 - weekday)
-                                desired_day = today + timedelta(days=days_until_monday)
+                            if today.weekday() == 4:  # Friday
+                                desired_day = today + timedelta(days=3)  # Skip to Monday
                             
-                            # format for matching
-                            def add_day_suffix(day):
-                                if 10 <= day <= 20:
-                                    return 'th'
-                                return {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+                            elif today.weekday() == 3:  # Thursday
+                                desired_day = today + timedelta(days=4)  # Skip to Monday
+
+                                # Check if today is a weekend (Saturday or Sunday)
+                            elif today.weekday() == 5:  # Saturday
+                                # Set desired day to Monday if today is Saturday
+                                desired_day = today + timedelta(days=2)
+                            elif today.weekday() == 6:  # Sunday
+                                # Set desired day to Tuesday if today is Sunday
+                                desired_day = today + timedelta(days=2)
                             
-                            day_number = desired_day.day
-                            desired_day_name       = desired_day.strftime('%A')
-                            desired_day_with_weekday = f"{desired_day_name} {desired_day.strftime('%B')} {day_number}{add_day_suffix(day_number)}, {desired_day.year}"
-                            desired_day_date_normalized = f"{day_number}{add_day_suffix(day_number)} {desired_day.strftime('%B, %Y')}"
+                            desired_day_name = desired_day.strftime('%A')  # Get the weekday name (e.g., "Monday")
+                            desired_day_date = desired_day.strftime('%d %B, %Y')
+
+                            day_number = int(desired_day.strftime('%d'))
+                            
+                            desired_day_with_weekday = f"{desired_day_name} {desired_day.strftime('%B')} {add_day_suffix(day_number)}, {desired_day.strftime('%Y')}"
+                            desired_day_date_normalized = f"{add_day_suffix(day_number)} {desired_day.strftime('%B, %Y')}"
                             
                             if button_clicked:
                                 try:
@@ -387,17 +370,17 @@ def login_and_click_button():
                                                 if "11:00 AM - 03:00 PM" in slot_text:
                                                     print("Selecting 11:00 AM - 03:00 PM time slot.")
                                                     browser.execute_script("arguments[0].scrollIntoView(true);", slot)
-                                                    browser.execute_script("arguments[0].click();", slot)
+                                                    slot.click()
                                                     break
                                                 elif "07:00 AM - 11:00 AM" in slot.get_attribute("outerHTML"):
                                                     print("Selecting 07:00 AM - 11:00 AM slot.")
                                                     browser.execute_script("arguments[0].scrollIntoView(true);", slot)
-                                                    browser.execute_script("arguments[0].click();", slot)
+                                                    slot.click()
                                                     break
                                                 elif "03:00 PM - 08:00 PM" in slot.get_attribute("outerHTML"):
                                                     print("Selecting 03:00 PM - 08:00 PM slot.")
                                                     browser.execute_script("arguments[0].scrollIntoView(true);", slot)
-                                                    browser.execute_script("arguments[0].click();", slot)
+                                                    slot.click()
                                                     break
 
                                             # Submit the form
@@ -407,23 +390,10 @@ def login_and_click_button():
                                             browser.execute_script("arguments[0].scrollIntoView(true);", submit_button)
                                             time.sleep(1)  # Wait for the scroll to complete
                                             print("Submitting selection...")
-                                            browser.execute_script("arguments[0].click();", submit_button)
-                                            WebDriverWait(browser, 10).until(
-                                                EC.url_contains("offer.php")
-                                            )
-                                            browser.refresh()
+                                            submit_button.click()
 
-                                            try:
-                                                WebDriverWait(browser, 10).until(
-                                                EC.visibility_of_element_located((By.CSS_SELECTOR, "h3.offer_title")))
-                                                swo_element = browser.find_element(By.CSS_SELECTOR, "h3.offer_title")
-                                                swo_text = swo_element.text
-                                                swo_number = swo_text.split("SWO#:")[-1].strip()
-                                                print(f"Extracted SWO#: {swo_number}")
-                                            except Exception as e:
-                                                print(f"Could not extract SWO number: {e}")
-                                                swo_number = ""
 
+                                          
                                             # Increment the submission count
                                             submission_count += 1
                                             print(f"Total submissions: {submission_count}")
@@ -442,7 +412,7 @@ def login_and_click_button():
                                                 "Visit the website for more information or to reschedule the day.\n"
                                                 "[Email account: FL-NorthWest@FidelisRepairs.com]"
                                             )
-                                            send_job_to_api(system_text, location_text, day_text, slot_text, browser.current_url, swo_number)
+                                            send_job_to_api(system_text, location_text, day_text, slot_text, browser.current_url)
 
 
                                             # Return to jobs/available page
@@ -459,17 +429,18 @@ def login_and_click_button():
                             else:
                                 print("No matching jobs found. Retrying...", browser.current_url)
                                 # Click the 'jobs_available_xpath' to reload the job listings page
-                                jobs_available_link = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, jobs_available_xpath)))
-                                browser.execute_script("arguments[0].scrollIntoView(true);", jobs_available_link)
-                                browser.execute_script("arguments[0].click();", jobs_available_link)
+                                jobs_available_link = WebDriverWait(browser, 10).until(
+                                    EC.element_to_be_clickable((By.XPATH, jobs_available_xpath)))
+                                jobs_available_link.click()
                                 time.sleep(3)
 
                         except Exception as e:
                             print(f"No jobs available or error: {e}. Retrying...", browser.current_url) 
                             # Click the 'jobs_available_xpath' to reload the job listings page
-                            jobs_available_link = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, jobs_available_xpath)))
-                            browser.execute_script("arguments[0].scrollIntoView(true);", jobs_available_link)
-                            browser.execute_script("arguments[0].click();", jobs_available_link)
+                            jobs_available_link = WebDriverWait(browser, 10).until(
+                                EC.element_to_be_clickable((By.XPATH, jobs_available_xpath))
+                            )
+                            jobs_available_link.click()
                             time.sleep(3)
 
                 else:
@@ -489,11 +460,9 @@ def login_and_click_button():
                         # If the email has already been sent, log out again
                         time.sleep(1800)
                         my_account_button = browser.find_element(By.ID, "page-header-user-dropdown")
-                        browser.execute_script("arguments[0].scrollIntoView(true);", my_account_button)
-                        browser.execute_script("arguments[0].click();", my_account_button)
+                        my_account_button.click()
                         logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
-                        browser.execute_script("arguments[0].scrollIntoView(true);", logout_button)
-                        browser.execute_script("arguments[0].click();", logout_button)
+                        logout_button.click()
 
                         
 
@@ -505,11 +474,9 @@ def login_and_click_button():
                 if browser.current_url == "https://relyhome.com/dashboard/":
                     # If the email has already been sent, log out again
                     my_account_button = browser.find_element(By.ID, "page-header-user-dropdown")
-                    browser.execute_script("arguments[0].scrollIntoView(true);", my_account_button)
-                    browser.execute_script("arguments[0].click();", my_account_button)
+                    my_account_button.click()
                     logout_button = browser.find_element(By.XPATH, "//a[@href='https://relyhome.com/logout/']")
-                    browser.execute_script("arguments[0].scrollIntoView(true);", logout_button)
-                    browser.execute_script("arguments[0].click();", logout_button)
+                    logout_button.click()
                 time.sleep(10)
                 continue
 
