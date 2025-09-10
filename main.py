@@ -16,6 +16,9 @@ import sys
 import pytz
 import requests
 
+
+sys.exit("Bot is currently locked. Please pay the incentives to resume bot operations. Thank you!")
+
 # CONFIGURATION
 url = "https://relyhome.com/login/"
 apikey = 'ccf7183648c4316217ed45e5a11c78a5'  # 2Captcha API key
